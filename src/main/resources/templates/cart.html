@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Your Items</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            padding: 40px 20px;
+        }
+        .cart-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .cart-header {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .cart-title {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .cart-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.4);
+        }
+        .cart-icon i { font-size: 28px; color: white; }
+        .cart-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out 0.2s backwards;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .cart-table {
+            width: 100%;
+            color: white;
+        }
+        .cart-table thead {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .cart-table th {
+            padding: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+        .cart-table td {
+            padding: 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .cart-table tbody tr {
+            transition: all 0.3s ease;
+        }
+        .cart-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .cart-table img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .product-name {
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .price-tag {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f093fb;
+        }
+        .quantity-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 13px;
+        }
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+        .btn-glass-danger {
+            background: rgba(220, 53, 69, 0.3);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+        }
+        .btn-glass-danger:hover {
+            background: rgba(220, 53, 69, 0.5);
+        }
+        .btn-glass-warning {
+            background: rgba(255, 193, 7, 0.3);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            color: #ffc107;
+        }
+        .btn-glass-warning:hover {
+            background: rgba(255, 193, 7, 0.5);
+        }
+        .quantity-form {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .quantity-input {
+            width: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            text-align: center;
+            border-radius: 8px;
+            padding: 6px;
+        }
+        .quantity-input:focus {
+            outline: none;
+            border-color: #f093fb;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .summary-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            padding: 30px;
+            animation: slideUp 0.6s ease-out 0.4s backwards;
+        }
+        .summary-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .summary-line.total {
+            border-bottom: none;
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            padding-top: 20px;
+        }
+        .summary-value {
+            font-weight: 600;
+        }
+        .btn-checkout {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            border: none;
+            color: #1a1a2e;
+            padding: 15px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.4);
+        }
+        .btn-checkout:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(67, 233, 123, 0.5);
+        }
+        .btn-continue {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: 500;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-continue:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+        .empty-cart i {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        .empty-cart h4 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .empty-cart p {
+            opacity: 0.7;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="cart-container">
+        <div class="cart-header">
+            <div class="cart-title">
+                <div class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <span>Shopping Cart</span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cart-card">
+                    <table class="cart-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Qty</th>
+                                <th>Total</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item: ${cartItems}">
+                                <td>
+                                    <div class="product-info">
+                                        <img th:src="${item.product.imageurl}" alt="Product">
+                                        <span class="product-name" th:text="${item.product.name}"></span>
+                                    </div>
+                                </td>
+                                <td class="price-tag" th:text="'$' + ${item.product.price}"></td>
+                                <td>
+                                    <span class="quantity-badge" th:text="${item.quantity}"></span>
+                                </td>
+                                <td class="price-tag" th:text="'$' + ${item.totalPrice}"></td>
+                                <td>
+                                    <div class="d-flex flex-column gap-2">
+                                        <a th:href="@{'/cart/remove/' + ${item.product.id}}" class="btn-glass btn-glass-danger">
+                                            <i class="fas fa-trash-alt me-1"></i> Remove
+                                        </a>
+                                        <form th:action="@{'/cart/remove1/' + ${item.product.id}}" method="get" class="quantity-form">
+                                            <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                                            <button type="submit" class="btn-glass btn-glass-warning">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(cartItems)}">
+                                <td colspan="5" class="empty-cart">
+                                    <i class="fas fa-shopping-basket"></i>
+                                    <h4>Your cart is empty</h4>
+                                    <p>Looks like you haven't added any items yet</p>
+                                    <a href="/products" class="btn btn-light px-4 py-2">
+                                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <div class="summary-title">
+                        <i class="fas fa-receipt"></i>
+                        Order Summary
+                    </div>
+                    <div class="summary-line">
+                        <span>Subtotal</span>
+                        <span class="summary-value" th:text="'$' + ${total}">$0</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Shipping</span>
+                        <span class="summary-value">$50</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Tax</span>
+                        <span class="summary-value">$0</span>
+                    </div>
+                    <div class="summary-line total">
+                        <span>Total</span>
+                        <span class="summary-value" th:text="'$' + (${total} + 50)">$50</span>
+                    </div>
+                    <button class="btn-checkout">
+                        <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                    </button>
+                    <a href="/products" class="btn-continue text-center d-block text-decoration-none">
+                        <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
