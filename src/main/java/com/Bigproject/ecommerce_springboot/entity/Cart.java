@@ -23,7 +23,7 @@ public class Cart {
 	private Product product;
 	private int quantity;
 	
-	
+	 
 	public Cart() {
 		super();
 	}

@@ -678,11 +678,11 @@
                 </div>
                 <div class="header-icon">
                     <i class="fas fa-envelope"></i>
-                    <span class="badge">3</span>
+                    <span class="badge" th:text="${pendingRetailers != null ? pendingRetailers.size() : '0'}">0</span>
                 </div>
                 <div class="header-icon">
                     <i class="fas fa-bell"></i>
-                    <span class="badge">4</span>
+                    <span class="badge" th:text="${todayOrders != null ? todayOrders : '0'}">0</span>
                 </div>
                 <div class="user-dropdown">
                     <div class="user-trigger">
@@ -691,6 +691,10 @@
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-menu">
+                        <a href="/admin/dashboard" class="dropdown-item">
+                            <i class="fas fa-th-large"></i>
+                            <span>Dashboard</span>
+                        </a>
                         <a href="/logout" class="dropdown-item">
                             <i class="fas fa-sign-out-alt"></i>
                             <span>Logout</span>
@@ -759,51 +763,51 @@
                     </div>
                     <div class="bar-chart">
                         <div class="bar-wrapper">
-                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal((janSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(janSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal(((janSales != null ? janSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(janSales != null ? janSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Jan</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal((febSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(febSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal(((febSales != null ? febSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(febSales != null ? febSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Feb</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal((marSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(marSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal(((marSales != null ? marSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(marSales != null ? marSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Mar</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal((aprSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(aprSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal(((aprSales != null ? aprSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(aprSales != null ? aprSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Apr</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal((maySales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(maySales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal(((maySales != null ? maySales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(maySales != null ? maySales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">May</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal((junSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(junSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal(((junSales != null ? junSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(junSales != null ? junSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Jun</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal((julSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(julSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal(((julSales != null ? julSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(julSales != null ? julSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Jul</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal((augSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(augSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal(((augSales != null ? augSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(augSales != null ? augSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Aug</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal((sepSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(sepSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal(((sepSales != null ? sepSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(sepSales != null ? sepSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Sep</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal((octSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(octSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal(((octSales != null ? octSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(octSales != null ? octSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Oct</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal((novSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(novSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar blue" th:style="'height: ' + ${#numbers.formatDecimal(((novSales != null ? novSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(novSales != null ? novSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Nov</span>
                         </div>
                         <div class="bar-wrapper">
-                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal((decSales ?: 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(decSales ?: 0, 0, 'COMMA', 0, 'POINT')}"></div>
+                            <div class="bar red" th:style="'height: ' + ${#numbers.formatDecimal(((decSales != null ? decSales : 0) / 10, 0, 'COMMA', 0, 'POINT')} + '%;'" th:data-value="'$' + ${#numbers.formatDecimal(decSales != null ? decSales : 0, 0, 'COMMA', 0, 'POINT')}"></div>
                             <span class="bar-label">Dec</span>
                         </div>
                     </div>
@@ -825,7 +829,7 @@
                             </div>
                             <span class="today-label">Total Sessions</span>
                         </div>
-                        <span class="today-value" th:text="${totalCustomers + totalRetailers} ?: '0'">0</span>
+                        <span class="today-value" th:text="${(totalCustomers != null ? totalCustomers : 0) + (totalRetailers != null ? totalRetailers : 0)}">0</span>
                     </div>
                     <div class="today-item">
                         <div class="today-left">
@@ -960,7 +964,7 @@
                                 <div class="retailer-email" th:text="${retailer.email}">retailer@email.com</div>
                             </div>
                         </div>
-                        <span class="status-badge" th:classappend="${retailer.status == 'APPROVED'} ? 'status-approved' : 'status-pending'" th:text="${retailer.status}">APPROVED</span>
+                        <span class="status-badge" th:classappend="${retailer.status != null and retailer.status == 'APPROVED'} ? 'status-approved' : 'status-pending'" th:text="${retailer.status != null ? retailer.status : 'PENDING'}">PENDING</span>
                     </div>
                 </div>
                 <div th:if="${retailers == null or retailers.empty}" style="text-align: center; padding: 40px;">

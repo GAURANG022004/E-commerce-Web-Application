@@ -1,6 +1,6 @@
 package com.Bigproject.ecommerce_springboot.Controller;
 
-import jakarta.servlet.http.HttpSession;
+import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,7 +18,7 @@ import com.Bigproject.ecommerce_springboot.Repository.UserRepository;
 import com.Bigproject.ecommerce_springboot.entity.User;
 import com.Bigproject.ecommerce_springboot.service.UserService;
 
-import java.util.Collections;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
@@ -43,9 +43,9 @@ public class UserController {
 	
 	@PostMapping("/login")
 	public String loginuser(@RequestParam String email, @RequestParam String userpassword, Model model, HttpSession session) {
-		
+
 		User users = service.chekUser(email, userpassword);
-		
+
 		if(users != null) {
 			// Create Spring Security authentication token
 			Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -53,21 +53,52 @@ public class UserController {
 				null,
 				Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + users.getRole()))
 			);
-			
+
 			// Set authentication in security context
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-			
-			// Store in session to persist across requests
+
+			// Store user in session
 			session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-			
+			session.setAttribute("user", users);
 			model.addAttribute("user", users);
-			return "redirect:/products";
+
+			// Redirect based on role
+			String role = users.getRole();
+			if("ADMIN".equals(role)) {
+				return "redirect:/admin/dashboard";
+			}
+			else if("RETAILER".equals(role)) {
+				// Check retailer approval status
+				String status = users.getStatus();
+				if("APPROVED".equals(status)) {
+					return "redirect:/retailer/dashboard";
+				}
+				else if("PENDING".equals(status)) {
+					model.addAttribute("message", "Your retailer account is pending approval. Please wait for admin approval.");
+					return "retailer-pending";
+				}
+				else if("REJECTED".equals(status)) {
+					model.addAttribute("error", "Your retailer application has been rejected. Please contact support.");
+					return "retailer-rejected";
+				}
+				else {
+					model.addAttribute("message", "Your account status is: " + status);
+					return "retailer-pending";
+				}
+			}
+			else if("CUSTOMER".equals(role)) {
+				return "redirect:/customer/dashboard";
+			}
+			else {
+				// Default redirect for unknown roles
+				return "redirect:/products";
+			}
 		}
 		else {
-			model.addAttribute("error","Wrong Crediantials");
+			model.addAttribute("error","Wrong Credentials");
 			return "login";
 		}
-		
+
 	}
 	
 	@GetMapping("/register")

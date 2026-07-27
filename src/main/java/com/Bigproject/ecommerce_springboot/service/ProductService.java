@@ -108,6 +108,11 @@ public class ProductService {
 		
 	}
 
+    public List<Product> searchByKeywordAndCategory(String keyword, String category) {
+        
+        return repo.searchByKeywordAndCategory(keyword, category);
+    }
+
 
 
 

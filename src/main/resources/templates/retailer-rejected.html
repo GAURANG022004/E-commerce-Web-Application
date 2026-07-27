@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Rejected</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .rejected-card {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .rejected-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 48px;
+            color: white;
+        }
+        .rejected-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        .rejected-message {
+            font-size: 16px;
+            color: #718096;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .btn-home {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .btn-home:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #fee2e2;
+            color: #dc2626;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .support-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #718096;
+        }
+    </style>
+</head>
+<body>
+    <div class="rejected-card">
+        <div class="rejected-icon">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        <div class="status-badge">APPLICATION REJECTED</div>
+        <h1 class="rejected-title">Application Not Approved</h1>
+        <p class="rejected-message" th:text="${error} ?: 'Your retailer application has been rejected. Please contact support for more information.'">
+            Your retailer application has been rejected. Please contact support for more information.
+        </p>
+        <a href="/logout" class="btn-home">
+            <i class="fas fa-sign-out-alt me-2"></i>Logout
+        </a>
+        <div class="support-info">
+            <i class="fas fa-envelope me-2"></i>support@ecommerce.com
+        </div>
+    </div>
+</body>
+</html>

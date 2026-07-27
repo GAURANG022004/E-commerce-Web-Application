@@ -51,7 +51,6 @@ public class CartService {
 	}
 
 	public List<Cart> getCartItems() {
-
 		return cartItems;
 	}
 
@@ -68,6 +67,19 @@ public class CartService {
 	public void deleteById(Long id) {
 		cartItems.removeIf(item -> item.getProduct().getId().equals(id));
 
+	}
+	
+	public void updateQuantity(Product product, int quantity) {
+		for (Cart item : cartItems) {
+			if (item.getProduct().getId().equals(product.getId())) {
+				item.setQuantity(quantity);
+				return;
+			}
+		}
+	}
+	
+	public void clearCart() {
+		cartItems.clear();
 	}
 
 }

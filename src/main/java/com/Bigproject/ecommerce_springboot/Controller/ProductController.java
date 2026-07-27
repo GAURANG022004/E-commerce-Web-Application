@@ -8,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.Bigproject.ecommerce_springboot.Repository.ProductRepository;
 import com.Bigproject.ecommerce_springboot.entity.Product;
-import com.Bigproject.ecommerce_springboot.entity.User;
 import com.Bigproject.ecommerce_springboot.service.ProductService;
-import com.Bigproject.ecommerce_springboot.service.UserService;
 
 @Controller
 public class ProductController {
