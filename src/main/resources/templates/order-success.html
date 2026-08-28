@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Order Successful | ShopSphere</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet">
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+
+<style>
+    body {
+        background: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .navbar {
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,.06);
+    }
+
+    .brand {
+        color: #4361ee !important;
+        font-weight: 700;
+    }
+
+    .success-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .success-card {
+        background: white;
+        border-radius: 18px;
+        padding: 45px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,.08);
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .success-icon {
+        width: 85px;
+        height: 85px;
+        border-radius: 50%;
+        background: #d1e7dd;
+        color: #198754;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        font-size: 45px;
+    }
+
+    .order-box {
+        background: #f6f8ff;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 25px 0;
+    }
+
+    .order-number {
+        color: #4361ee;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .total {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #4361ee;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+
+```
+    <a class="navbar-brand brand" href="/customer/products">
+        <i class="bi bi-bag-heart-fill me-2"></i>
+        ShopSphere
+    </a>
+
+    <div>
+
+        <a href="/customer/products"
+           class="btn btn-outline-primary btn-sm me-2">
+            <i class="bi bi-shop me-1"></i>
+            Continue Shopping
+        </a>
+
+        <a href="/logout"
+           class="btn btn-outline-danger btn-sm">
+            Logout
+        </a>
+
+    </div>
+
+</div>
+```
+
+</nav>
+
+<div class="container success-container">
+
+```
+<div class="success-card">
+
+    <div class="success-icon">
+
+        <i class="bi bi-check-lg"></i>
+
+    </div>
+
+
+    <h1 class="fw-bold text-success">
+        Order Placed Successfully!
+    </h1>
+
+    <p class="text-muted mt-3">
+        Thank you for shopping with ShopSphere.
+        Your payment has been successfully received.
+    </p>
+
+
+    <div class="order-box">
+
+        <div class="mb-3">
+
+            <div class="small text-muted">
+                Order Number
+            </div>
+
+            <div class="order-number"
+                 th:text="'#' + ${order.id}">
+                #1
+            </div>
+
+        </div>
+
+
+        <div class="d-flex justify-content-between mb-2">
+
+            <span class="text-muted">
+                Items
+            </span>
+
+            <strong th:text="${order.totalItems}">
+                1
+            </strong>
+
+        </div>
+
+
+        <div class="d-flex justify-content-between">
+
+            <span class="text-muted">
+                Amount Paid
+            </span>
+
+            <span class="total"
+                  th:text="'₹ ' + ${order.totalAmount}">
+                ₹ 0
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="alert alert-success">
+
+        <i class="bi bi-shield-check me-2"></i>
+
+        Payment completed successfully.
+
+    </div>
+
+
+    <div class="d-flex gap-2 justify-content-center">
+
+        <a href="/customer/orders"
+           class="btn btn-primary">
+
+            <i class="bi bi-receipt me-1"></i>
+
+            View My Orders
+
+        </a>
+
+        <a href="/customer/products"
+           class="btn btn-outline-secondary">
+
+            Continue Shopping
+
+        </a>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+</body>
+</html>

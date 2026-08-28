@@ -1,7 +1,6 @@
 package com.Bigproject.ecommerce_springboot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +13,14 @@ import com.Bigproject.ecommerce_springboot.entity.User;
 import java.util.Arrays;
 import java.util.List;
 
-
-@Service
+@Service 
 public class UserService {
 	
 	@Autowired
-	@Qualifier("userRepository")
 	UserRepository repo;
 	
 	@Autowired
-	RetailerRepository retailerRepository;
+	RetailerRepository retailerRepository; 
 	
 	@Autowired
 	AdminRepository adminRepository;
@@ -32,76 +29,77 @@ public class UserService {
 	CustomerRepository customerRepository;
 	
 	@Autowired
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder; //It encode the raw password, with the help of SHA-1, greater hash combined with 8-bit, random salt
 	
 	private static final List<String> VALID_ROLES = Arrays.asList("CUSTOMER", "RETAILER", "ADMIN");
 
+
+	// ==========LOGIN=================
 	public User chekUser(String email, String password) {
 	    User user = repo.findByEmail(email);
 
-	    if(user != null) {
-	        if(passwordEncoder.matches(password, user.getUserpassword())) {
-				// Check if retailer is approved
-				if("RETAILER".equals(user.getRole())) {
+
+		if (user == null) {
+            System.out.println("No user found with email: " + email);
+            return null;
+        }
+
+        if (!passwordEncoder.matches(password, user.getUserpassword())) {
+            System.out.println("Password mismatch for email: " + email);
+            return null;
+        }
+
+	    if("RETAILER".equals(user.getRole())) {
 					if(!"APPROVED".equals(user.getStatus())) {
 						System.out.println("Retailer not approved: " + email + " - Status: " + user.getStatus());
 						return null;
 					}
-				}
-	            return user;
-	        } else {
-	            System.out.println("Password mismatch for email: " + email);
-	        }
+		}
+	    return user;
+	
+	    
+	}
+
+	
+	// ==========CUSTOMER REGISTRATION=================
+	public User registerUser(User user) {
+
+		//Public registration is ALWAYS CUSTOMER
+		user.setRole("CUSTOMER");
+		user.setStatus("APPROVED");
+
+	    String encodedPassword = passwordEncoder.encode(user.getUserpassword());
+	    user.setUserpassword(encodedPassword);
+	    return repo.save(user);
+	}
+
+
+	// ==========REGISTRATION of User with Specific Role=================
+	public User registerUserWithRole(User user, String role) {
+	    
+	    if(role == null || role.isEmpty() || !VALID_ROLES.contains(role.toUpperCase())) {
+	        user.setRole("CUSTOMER");
 	    } else {
-	        System.out.println("No user found with email: " + email);
+	        user.setRole(role.toUpperCase());
+	    }
+	    
+	    // Retailers need admin approval
+	    if("RETAILER".equals(user.getRole())) {
+	    	user.setStatus("PENDING");
+	    } else {
+	    	user.setStatus("APPROVED");
 	    }
 
-	    return null;
-	}
-	
-	public User registerUser(User user) {
-	    String encodedPassword = passwordEncoder.encode(user.getUserpassword());
+		String encodedPassword = passwordEncoder.encode(user.getUserpassword());
 	    user.setUserpassword(encodedPassword);
-	    
-	    String role = user.getRole();
-	    if(role == null || role.isEmpty() || !VALID_ROLES.contains(role.toUpperCase())) {
-	        user.setRole("CUSTOMER");
-	    } else {
-	        user.setRole(role.toUpperCase());
-	    }
-	    
-	    // Set status based on role
-	    if("RETAILER".equals(user.getRole())) {
-	    	user.setStatus("PENDING");
-	    } else {
-	    	user.setStatus("APPROVED");
-	    }
 	    
 	    return repo.save(user);
 	}
 	
-	public User registerUserWithRole(User user, String role) {
-	    String encodedPassword = passwordEncoder.encode(user.getUserpassword());
-	    user.setUserpassword(encodedPassword);
-	    
-	    if(role == null || role.isEmpty() || !VALID_ROLES.contains(role.toUpperCase())) {
-	        user.setRole("CUSTOMER");
-	    } else {
-	        user.setRole(role.toUpperCase());
-	    }
-	    
-	    // Set status based on role
-	    if("RETAILER".equals(user.getRole())) {
-	    	user.setStatus("PENDING");
-	    } else {
-	    	user.setStatus("APPROVED");
-	    }
-	    
-	    return repo.save(user);
-	}
-	
-	// Admin approves retailer
+
+	// ==========RETAILER APPROVAL BY ADMIN =================
 	public User approveRetailer(Long userId) {
+		
 		User user = retailerRepository.findById(userId).orElse(null);
 		if(user != null) {
 			user.setStatus("APPROVED");
@@ -110,7 +108,8 @@ public class UserService {
 		return null;
 	}
 	
-	// Admin rejects retailer
+
+	// ==========RETAILER REJECTION BY ADMIN =================
 	public User rejectRetailer(Long userId) {
 		User user = retailerRepository.findById(userId).orElse(null);
 		if(user != null) {
@@ -120,6 +119,8 @@ public class UserService {
 		return null;
 	}
 	
+
+	// ===============RETAILERS LISTS=========================
 	// Get all pending retailers
 	public List<User> getPendingRetailers() {
 		return retailerRepository.findPendingRetailers();
@@ -140,7 +141,7 @@ public class UserService {
 		return retailerRepository.findAllRetailers();
 	}
 	
-	// Admin creates approved retailer directly
+	// ============ADMIN CREATION OF APPROVED RETAILER==============
 	public User createApprovedRetailer(User user) {
 		String encodedPassword = passwordEncoder.encode(user.getUserpassword());
 	    user.setUserpassword(encodedPassword);
@@ -149,7 +150,8 @@ public class UserService {
 	    return retailerRepository.save(user);
 	}
 	
-	// Get admin dashboard stats
+	
+	// =================ADMIN DASHBOARD STATISTICS=========================
 	public Long countTotalCustomers() {
 		return adminRepository.countTotalCustomers();
 	}
@@ -166,7 +168,8 @@ public class UserService {
 		return adminRepository.countApprovedRetailers();
 	}
 	
-	// Customer management methods using CustomerRepository
+
+	// =================CUSTOMER MANAGEMENT=========================
 	public List<User> getAllCustomers() {
 		return customerRepository.findAllCustomers();
 	}

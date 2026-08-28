@@ -3,38 +3,36 @@ package com.Bigproject.ecommerce_springboot.Repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.Bigproject.ecommerce_springboot.entity.Product;
+import com.Bigproject.ecommerce_springboot.entity.User;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long>{
+public interface ProductRepository extends JpaRepository<Product, Long> {
 
-	@Query("SELECT p FROM Product p WHERE " +
-		       "(LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) OR "+
-			"(LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) ")
-		List<Product> searchByOptionalParams(String keyword);
+// Search and filter
+List<Product> findByCategoryIgnoreCase(String category);
 
-	List<Product> findByCategoryIgnoreCase(String category);
+List<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+        String name,
+        String description);
 
-	// Count total products
-	@Query("SELECT COUNT(p) FROM Product p")
-	Long countTotalProducts();
+List<Product> findByNameContainingIgnoreCaseAndCategoryIgnoreCase(
+        String name,
+        String category);
 
-	// Get products with low stock
-	@Query("SELECT p FROM Product p WHERE p.stock < 20 ORDER BY p.stock ASC")
-	List<Product> findLowStockProducts();
+// Dashboard / stock
+List<Product> findByStockLessThanOrderByStockAsc(int stock);
 
-	// Get popular products (highest stock for demo - in real app would be by sales)
-	@Query("SELECT p FROM Product p ORDER BY p.stock DESC LIMIT 5")
-	List<Product> findPopularProducts();
+List<Product> findTop5ByOrderByStockDesc();
 
-    @Query("SELECT p FROM Product p WHERE " +
-           "(LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) OR " +
-           "(LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-           "AND LOWER(p.category) = LOWER(:category)")
-    List<Product> searchByKeywordAndCategory(String keyword, String category);			
+// Retailer ownership
+List<Product> findByRetailer(User retailer);
+
+List<Product> findByRetailerUser_id(Long retailerId);
+
+Product findByIdAndRetailerUser_id(Long id, Long retailerId);
 
 
 }

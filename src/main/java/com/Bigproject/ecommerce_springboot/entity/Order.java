@@ -30,6 +30,7 @@ public class Order {
     private String status; // PENDING, COMPLETED, CANCELLED
     private LocalDateTime orderDate;
     private LocalDateTime createdAt;
+    private String razorpayOrderId;
 
     public Order() {
         this.orderDate = LocalDateTime.now();
@@ -91,5 +92,13 @@ public class Order {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getRazorpayOrderId() {
+        return razorpayOrderId;
+    }
+
+    public void setRazorpayOrderId(String razorpayOrderId) {
+        this.razorpayOrderId = razorpayOrderId;
     }
 }

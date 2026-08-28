@@ -58,10 +58,9 @@ public class DashboardService {
     }
 
     // Get total products count
-    public Long getTotalProducts() {
-        Long count = productRepository.countTotalProducts();
-        return count != null ? count : 0L;
-    }
+   public Long getTotalProducts() {
+    return productRepository.count();
+}
 
     // Get total customers count
     public Long getTotalCustomers() {
@@ -77,9 +76,9 @@ public class DashboardService {
 
     // Get popular products
     public List<Product> getPopularProducts() {
-        List<Product> products = productRepository.findPopularProducts();
-        return products != null ? products : new ArrayList<>();
-    }
+    List<Product> products = productRepository.findTop5ByOrderByStockDesc();
+    return products != null ? products : new ArrayList<>();
+}
 
     // Get monthly sales data for chart (last 12 months)
     public Map<String, Double> getMonthlySalesData() {
@@ -108,8 +107,7 @@ public class DashboardService {
         return monthlyData;
     }
 
-    // Get low stock products
     public List<Product> getLowStockProducts() {
-        return productRepository.findLowStockProducts();
-    }
+    return productRepository.findByStockLessThanOrderByStockAsc(20);
+}
 }

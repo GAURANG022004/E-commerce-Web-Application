@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Checkout | ShopSphere</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet">
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<!-- Razorpay Checkout -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --light-bg: #f8f9fa;
+        --text: #273043;
+        --muted: #6c757d;
+        --card-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+
+    body {
+        background-color: var(--light-bg);
+        font-family: 'Poppins', sans-serif;
+        color: var(--text);
+    }
+
+    .navbar-blur {
+        background: rgba(255,255,255,0.95);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+    }
+
+    .brand {
+        font-weight: 700;
+        color: var(--primary-color) !important;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg,
+            var(--primary-color),
+            var(--secondary-color));
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .checkout-card {
+        background: white;
+        border-radius: 16px;
+        border: none;
+        box-shadow: var(--card-shadow);
+        padding: 25px;
+    }
+
+    .order-info {
+        background: #f6f8ff;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .total-section {
+        background: #f6f8ff;
+        border-radius: 12px;
+        padding: 20px;
+    }
+
+    .price {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+
+    .pay-button {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        font-size: 1.05rem;
+        font-weight: 600;
+        padding: 13px;
+    }
+
+    .pay-button:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+
+    .secure-payment {
+        font-size: 0.85rem;
+        color: var(--muted);
+    }
+
+    .razorpay-badge {
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 12px;
+        background: #fff;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav class="navbar navbar-expand-lg navbar-blur sticky-top">
+
+```
+<div class="container">
+
+    <a class="navbar-brand brand" href="/customer/products">
+
+        <i class="bi bi-bag-heart-fill me-2"></i>
+        ShopSphere
+
+    </a>
+
+    <div class="ms-auto">
+
+        <a href="/customer/cart"
+           class="btn btn-outline-primary btn-sm me-2">
+
+            <i class="bi bi-cart3 me-1"></i>
+            Back to Cart
+
+        </a>
+
+        <a href="/logout"
+           class="btn btn-outline-danger btn-sm">
+
+            <i class="bi bi-box-arrow-right me-1"></i>
+            Logout
+
+        </a>
+
+    </div>
+
+</div>
+```
+
+</nav>
+
+<!-- PAGE HEADER -->
+
+<div class="page-header">
+
+```
+<div class="container">
+
+    <h1 class="display-6 fw-bold">
+        Checkout
+    </h1>
+
+    <p class="mb-0">
+        Review your order and complete your payment securely.
+    </p>
+
+</div>
+```
+
+</div>
+
+<!-- CHECKOUT -->
+
+<div class="container mb-5">
+
+```
+<div class="row g-4">
+
+    <!-- ORDER INFORMATION -->
+
+    <div class="col-lg-7">
+
+        <div class="checkout-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h4 class="mb-0">
+                    <i class="bi bi-bag-check me-2"></i>
+                    Order Summary
+                </h4>
+
+                <span class="badge bg-primary"
+                      th:text="'Order #' + ${order.id}">
+                    Order #1
+                </span>
+
+            </div>
+
+
+            <div class="order-info mb-3">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3 mb-md-0">
+
+                        <small class="text-muted">
+                            Customer
+                        </small>
+
+                        <div class="fw-semibold"
+                             th:text="${order.customer.username}">
+                            Customer
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6">
+
+                        <small class="text-muted">
+                            Order Status
+                        </small>
+
+                        <div>
+
+                            <span class="badge bg-warning text-dark"
+                                  th:text="${order.status}">
+                                PENDING
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="border rounded-3 p-3 mb-3">
+
+                <div class="d-flex justify-content-between mb-3">
+
+                    <span class="text-muted">
+                        Number of Items
+                    </span>
+
+                    <strong th:text="${order.totalItems}">
+                        1
+                    </strong>
+
+                </div>
+
+
+                <div class="d-flex justify-content-between">
+
+                    <span class="text-muted">
+                        Order Date
+                    </span>
+
+                    <span th:text="${order.orderDate}">
+                        Date
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="razorpay-badge">
+
+                <div class="d-flex align-items-center">
+
+                    <i class="bi bi-shield-check fs-3 text-success me-3"></i>
+
+                    <div>
+
+                        <div class="fw-semibold">
+                            Secure Online Payment
+                        </div>
+
+                        <small class="text-muted">
+                            Your payment is securely processed by Razorpay.
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PAYMENT -->
+
+    <div class="col-lg-5">
+
+        <div class="checkout-card">
+
+            <h4 class="mb-4">
+                Payment Details
+            </h4>
+
+
+            <div class="d-flex justify-content-between mb-3">
+
+                <span class="text-muted">
+                    Items Total
+                </span>
+
+                <span
+                    th:text="'₹ ' + ${order.totalAmount - 50}">
+                    ₹ 0
+                </span>
+
+            </div>
+
+
+            <div class="d-flex justify-content-between mb-3">
+
+                <span class="text-muted">
+                    Shipping
+                </span>
+
+                <span>
+                    ₹ 50
+                </span>
+
+            </div>
+
+
+            <hr>
+
+
+            <div class="total-section mb-4">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <span class="fw-semibold">
+                        Total Payable
+                    </span>
+
+                    <span class="price fs-4"
+                          th:text="'₹ ' + ${order.totalAmount}">
+                        ₹ 0
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- PAY BUTTON -->
+
+            <button type="button"
+                    id="payButton"
+                    class="btn btn-primary pay-button w-100">
+
+                <i class="bi bi-credit-card me-2"></i>
+
+                Pay with Razorpay
+
+            </button>
+
+
+            <div class="text-center secure-payment mt-3">
+
+                <i class="bi bi-lock-fill me-1"></i>
+
+                Secure payment
+
+            </div>
+
+
+            <a href="/customer/cart"
+               class="btn btn-outline-secondary w-100 mt-3">
+
+                <i class="bi bi-arrow-left me-1"></i>
+
+                Back to Cart
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+```
+
+</div>
+
+<!-- RAZORPAY -->
+
+<script th:inline="javascript">
+
+    /*
+     * Values supplied by CheckoutController
+     */
+
+    const razorpayKeyId =
+        /*[[${razorpayKeyId}]]*/ '';
+
+    const razorpayOrderId =
+        /*[[${order.razorpayOrderId}]]*/ '';
+
+    const orderId =
+        /*[[${order.id}]]*/ 0;
+
+
+    document.getElementById("payButton")
+        .addEventListener("click", function () {
+
+            if (!razorpayKeyId || !razorpayOrderId) {
+
+                alert(
+                    "Payment could not be initialized. Please try again."
+                );
+
+                return;
+            }
+
+
+            const options = {
+
+                key: razorpayKeyId,
+
+                order_id: razorpayOrderId,
+
+                currency: "INR",
+
+                name: "ShopSphere",
+
+                description:
+                    "Payment for ShopSphere Order #" + orderId,
+
+
+                handler: function (response) {
+
+                    /*
+                     * Razorpay payment was completed.
+                     *
+                     * Send payment information to our backend
+                     * for signature verification.
+                     */
+
+                    const form =
+                        document.createElement("form");
+
+                    form.method = "POST";
+                    form.action = "/payment/verify";
+
+
+                    const paymentId =
+                        document.createElement("input");
+
+                    paymentId.type = "hidden";
+                    paymentId.name = "razorpayPaymentId";
+                    paymentId.value =
+                        response.razorpay_payment_id;
+
+
+                    const razorpayOrder =
+                        document.createElement("input");
+
+                    razorpayOrder.type = "hidden";
+                    razorpayOrder.name = "razorpayOrderId";
+                    razorpayOrder.value =
+                        response.razorpay_order_id;
+
+
+                    const signature =
+                        document.createElement("input");
+
+                    signature.type = "hidden";
+                    signature.name = "razorpaySignature";
+                    signature.value =
+                        response.razorpay_signature;
+
+
+                    const order =
+                        document.createElement("input");
+
+                    order.type = "hidden";
+                    order.name = "orderId";
+                    order.value = orderId;
+
+
+                    form.appendChild(paymentId);
+                    form.appendChild(razorpayOrder);
+                    form.appendChild(signature);
+                    form.appendChild(order);
+
+                    document.body.appendChild(form);
+
+                    form.submit();
+
+                },
+
+
+                modal: {
+
+                    ondismiss: function () {
+
+                        console.log(
+                            "Razorpay payment window closed."
+                        );
+
+                    }
+
+                },
+
+
+                theme: {
+
+                    color: "#4361ee"
+
+                }
+
+            };
+
+
+            const razorpay =
+                new Razorpay(options);
+
+            razorpay.open();
+
+        });
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

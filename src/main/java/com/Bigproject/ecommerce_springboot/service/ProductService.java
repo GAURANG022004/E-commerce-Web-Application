@@ -9,118 +9,112 @@ import org.springframework.stereotype.Service;
 
 import com.Bigproject.ecommerce_springboot.Repository.ProductRepository;
 import com.Bigproject.ecommerce_springboot.entity.Product;
+import com.Bigproject.ecommerce_springboot.entity.User;
 
 @Service
 public class ProductService {
-	
-	@Autowired
-	ProductRepository repo;
 
-	
-	public List<Product> AllProduct() {
-		return repo.findAll();
-	}
+    @Autowired
+    private ProductRepository repo;
 
 
-	//Saving....
-	public void savethis(Product product) {
-		repo.save(product);
-	}
-
-
-	//edit Product
-//	public Product updateProd(Long id) {
-//		
-//        return repo.findById(id).orElse(new Product());
-//	}
-	
-	
-
-	//Delete Product
-	public void deletethisId(Long id) {
-		repo.deleteById(id);
-	}
-
-
-	public Product updateProd(Long id) {
-		return repo.findById(id).orElse(new Product());
-		
-	}
-
-//
-//	public List<Product> findbyname(String name) {
-//		
-//		return repo.findByNameContainingIgnoreCase(name);
-//		
-//	}
-//
-//
-//	public List<Product> searchbythis(String name, String category, String description) {
-//		
-//		return repo.findByNameContainingIgnoreCaseAndCategoryIgnoreCaseAndDescriptionIgnoreCase(name, category, description);
-//			
-//	}
-//
-//
-//	public List<Product> findbycatg(String category) {
-//		return repo.findByCategoryIgnoreCase(category);
-//		
-//	}
-//
-//
-//	public List<Product> findbydesc(String description) {
-//		return repo.findByDescriptionIgnoreCase(description);
-//		
-//	}
-
-
-	public List<Product> findAll() {
-		return repo.findAll();
-	}
-
-
-	public List<Product> searchByOptionalParams(String keyword) {
-
-		
-
-		return repo.searchByOptionalParams(keyword);
-		
-	}
-
-	public List<Product> findByCatgory(String category){
-		
-		
-		System.out.println("Category Applied...");
-		return repo.findByCategoryIgnoreCase(category);
-		
-	}
-
-
-	public List<Product> addInCart(Product product) {
-		
-		return null;
-	}
-
-
-	public Page<Product> findAll(Pageable pageable) {
-		
-		return repo.findAll(pageable);
-		
-	}
-
-    public List<Product> searchByKeywordAndCategory(String keyword, String category) {
-        
-        return repo.searchByKeywordAndCategory(keyword, category);
+    public List<Product> AllProduct() {
+        return repo.findAll();
     }
 
 
+    public void savethis(Product product) {
+        repo.save(product);
+    }
 
 
-
-	
-
-
-
+    public void deletethisId(Long id) {
+        repo.deleteById(id);
+    }
 
 
+    public Product updateProd(Long id) {
+        return repo.findById(id).orElse(new Product());
+    }
+
+
+    public List<Product> findAll() {
+        return repo.findAll();
+    }
+
+
+    public Page<Product> findAll(Pageable pageable) {
+        return repo.findAll(pageable);
+    }
+
+
+    public List<Product> searchByOptionalParams(String keyword) {
+        return repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                keyword,
+                keyword
+        );
+    }
+
+
+    public List<Product> findByCatgory(String category) {
+        return repo.findByCategoryIgnoreCase(category);
+    }
+
+
+    public List<Product> searchByKeywordAndCategory(
+            String keyword,
+            String category) {
+
+        return repo.findByNameContainingIgnoreCaseAndCategoryIgnoreCase(
+                keyword,
+                category
+        );
+    }
+
+
+    // =========================================================
+    // RETAILER PRODUCT METHODS
+    // =========================================================
+
+	//ONLY RETAILER CAN VIEW THEIR OWN PRODUCTS
+    public List<Product> findProductsByRetailer(Long retailerId) {
+        return repo.findByRetailerUser_id(retailerId);
+    }
+
+	//ONLY RETAILER CAN VIEW THEIR OWN PRODUCTS
+    public Product findRetailerProduct(Long productId, Long retailerId) {
+
+        return repo.findByIdAndRetailerUser_id(
+                productId,
+                retailerId
+        );
+    }
+
+	//ONLY RETAILER CAN ADD PRODUCTS
+    public void saveProductForRetailer(Product product, User retailer) {
+
+        product.setRetailer(retailer);
+
+        repo.save(product);
+    }
+
+	//ONLY RETAILER CAN DELETE THEIR OWN PRODUCTS
+    public boolean deleteRetailerProduct(
+            Long productId,
+            Long retailerId) {
+
+        Product product =
+                repo.findByIdAndRetailerUser_id(
+                        productId,
+                        retailerId
+                );
+
+        if (product == null) {
+            return false;
+        }
+
+        repo.delete(product);
+
+        return true;
+    }
 }

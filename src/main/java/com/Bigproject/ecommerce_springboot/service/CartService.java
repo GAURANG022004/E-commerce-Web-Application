@@ -5,12 +5,14 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.SessionScope;
 
 import com.Bigproject.ecommerce_springboot.Repository.ProductRepository;
 import com.Bigproject.ecommerce_springboot.entity.Cart;
 import com.Bigproject.ecommerce_springboot.entity.Product;
 
 @Service
+@SessionScope
 public class CartService {
 
 	@Autowired

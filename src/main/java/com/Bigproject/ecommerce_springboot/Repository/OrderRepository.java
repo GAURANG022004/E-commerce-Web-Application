@@ -9,12 +9,16 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.Bigproject.ecommerce_springboot.entity.Order;
+import com.Bigproject.ecommerce_springboot.entity.User;
+
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-
-    // Count total orders
-    @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 'COMPLETED'")
+       
+       List<Order> findByCustomerOrderByOrderDateDesc(User customer);
+       
+       // Count total orders
+       @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 'COMPLETED'")
     Long countTotalOrders();
 
     // Count today's orders
@@ -52,4 +56,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // Get popular products by order count
     @Query("SELECT o FROM Order o WHERE o.status = 'COMPLETED' ORDER BY o.orderDate DESC")
     List<Order> findAllCompletedOrders();
+
 }
