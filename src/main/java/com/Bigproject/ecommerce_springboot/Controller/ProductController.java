@@ -94,13 +94,7 @@ public class ProductController {
 
 	}
 
-	@GetMapping("/products/cart")
-	public Product cart(Product product) {
-
-		List<Product> cart = service.addInCart(product);
-		return product;
-
-	}
+	
 
 	@GetMapping("/products")
 	public String pagination(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size,
