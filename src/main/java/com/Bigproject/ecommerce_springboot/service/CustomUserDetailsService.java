@@ -19,17 +19,33 @@ public class CustomUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email)
+            throws UsernameNotFoundException {
+
         User user = userRepository.findByEmail(email);
-        
+
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with email: " + email);
+            throw new UsernameNotFoundException(
+                    "User not found with email: " + email
+            );
         }
-        
+
+        if ("RETAILER".equals(user.getRole()) // if role = retailer && status = not Approval
+                && !"APPROVED".equals(user.getStatus())) {
+
+            throw new UsernameNotFoundException(
+                    "Retailer account is not approved"
+            );
+        }
+
         return new org.springframework.security.core.userdetails.User(
-            user.getEmail(),
-            user.getUserpassword(),
-            Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
+                user.getEmail(),
+                user.getUserpassword(),
+                Collections.singletonList(
+                        new SimpleGrantedAuthority(
+                                "ROLE_" + user.getRole()
+                        )
+                )
         );
     }
 }
