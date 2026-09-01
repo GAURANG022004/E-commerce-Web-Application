@@ -31,34 +31,34 @@ public class UserService {
 	@Autowired
 	private PasswordEncoder passwordEncoder; //It encode the raw password, with the help of SHA-1, greater hash combined with 8-bit, random salt
 	
-	private static final List<String> VALID_ROLES = Arrays.asList("CUSTOMER", "RETAILER", "ADMIN");
+	private static final List<String> VALID_ROLES = Arrays.asList("CUSTOMER", "RETAILER");
 
 
 	// ==========LOGIN=================
-	public User chekUser(String email, String password) {
-	    User user = repo.findByEmail(email);
+	// public User chekUser(String email, String password) {
+	//     User user = repo.findByEmail(email);
 
 
-		if (user == null) {
-            System.out.println("No user found with email: " + email);
-            return null;
-        }
+	// 	if (user == null) {
+    //         System.out.println("No user found with email: " + email);
+    //         return null;
+    //     }
 
-        if (!passwordEncoder.matches(password, user.getUserpassword())) {
-            System.out.println("Password mismatch for email: " + email);
-            return null;
-        }
+    //     if (!passwordEncoder.matches(password, user.getUserpassword())) {
+    //         System.out.println("Password mismatch for email: " + email);
+    //         return null;
+    //     }
 
-	    if("RETAILER".equals(user.getRole())) {
-					if(!"APPROVED".equals(user.getStatus())) {
-						System.out.println("Retailer not approved: " + email + " - Status: " + user.getStatus());
-						return null;
-					}
-		}
-	    return user;
+	//     if("RETAILER".equals(user.getRole())) {
+	// 				if(!"APPROVED".equals(user.getStatus())) {
+	// 					System.out.println("Retailer not approved: " + email + " - Status: " + user.getStatus());
+	// 					return null;
+	// 				}
+	// 	}
+	//     return user;
 	
 	    
-	}
+	// }
 
 	
 	// ==========CUSTOMER REGISTRATION=================
@@ -77,18 +77,27 @@ public class UserService {
 	// ==========REGISTRATION of User with Specific Role=================
 	public User registerUserWithRole(User user, String role) {
 	    
-	    if(role == null || role.isEmpty() || !VALID_ROLES.contains(role.toUpperCase())) {
-	        user.setRole("CUSTOMER");
-	    } else {
-	        user.setRole(role.toUpperCase());
-	    }
 	    
-	    // Retailers need admin approval
-	    if("RETAILER".equals(user.getRole())) {
-	    	user.setStatus("PENDING");
-	    } else {
-	    	user.setStatus("APPROVED");
-	    }
+	     if (role == null || role.isBlank()) {
+            throw new IllegalArgumentException("Role is required.");
+        }
+
+        String normalizedRole = role.trim().toUpperCase();
+
+        if (!VALID_ROLES.contains(normalizedRole)) {
+            throw new IllegalArgumentException("Invalid registration role.");
+        }
+
+        user.setRole(normalizedRole);
+
+        // Customer can use the application immediately.
+        // Retailer must wait for Admin approval.
+        if ("RETAILER".equals(normalizedRole)) {
+            user.setStatus("PENDING");
+        } else {
+            user.setStatus("APPROVED");
+        }
+		
 
 		String encodedPassword = passwordEncoder.encode(user.getUserpassword());
 	    user.setUserpassword(encodedPassword);
