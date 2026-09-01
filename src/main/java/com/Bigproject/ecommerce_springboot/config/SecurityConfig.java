@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 public class SecurityConfig {
@@ -32,6 +33,29 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationSuccessHandler customerAuthenticationSuccessHandler(){
+        
+        return (request, response, authentication) -> {
+
+            if(authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))){
+                        response.sendRedirect("/admin/dashboard");
+            } else if(authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_RETAILER"))){
+                        response.sendRedirect("/retailer/dashboard");
+                    }
+            else if(authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"))){
+                        response.sendRedirect("/customer/dashboard");
+            } else {
+                response.sendRedirect("/login");
+            }
+
+        };
+    }
+
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
@@ -50,6 +74,15 @@ public class SecurityConfig {
                 .requestMatchers("/checkout", "/checkout/**", "/payment", "/payment/**", "/orders", "/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
                 // Any other request requires authentication
                 .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+            .loginPage("/login")
+            .loginProcessingUrl("/login")
+            .usernameParameter("email")
+            .passwordParameter("userpassword")
+            .successHandler(customerAuthenticationSuccessHandler())
+            .failureUrl("/login?error=true")
+            .permitAll()
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login")
