@@ -15,37 +15,36 @@ import java.util.Collections;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String email)
-            throws UsernameNotFoundException {
+        @Override
+        public UserDetails loadUserByUsername(String email)
+                        throws UsernameNotFoundException {
 
-        User user = userRepository.findByEmail(email);
+                User user = userRepository.findByEmail(email);
 
-        if (user == null) {
-            throw new UsernameNotFoundException(
-                    "User not found with email: " + email
-            );
+                if (user == null) {
+                        throw new UsernameNotFoundException(
+                                        "User not found with email: " + email);
+                }
+
+                if ("RETAILER".equals(user.getRole()) // if role = retailer && status = not Approval
+                                && !"APPROVED".equals(user.getStatus())) {
+
+                        throw new UsernameNotFoundException(
+                                        "Retailer account is not approved");
+                }
+
+                System.out.println("LOGIN USER: " + user.getEmail());
+                System.out.println("LOGIN ROLE: " + user.getRole());
+                System.out.println("PASSWORD HASH: " + user.getUserpassword());
+
+                return new org.springframework.security.core.userdetails.User(
+                                user.getEmail(),
+                                user.getUserpassword(),
+                                Collections.singletonList(
+                                                new SimpleGrantedAuthority(
+                                                                "ROLE_" + user.getRole())));
         }
-
-        if ("RETAILER".equals(user.getRole()) // if role = retailer && status = not Approval
-                && !"APPROVED".equals(user.getStatus())) {
-
-            throw new UsernameNotFoundException(
-                    "Retailer account is not approved"
-            );
-        }
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getUserpassword(),
-                Collections.singletonList(
-                        new SimpleGrantedAuthority(
-                                "ROLE_" + user.getRole()
-                        )
-                )
-        );
-    }
 }
