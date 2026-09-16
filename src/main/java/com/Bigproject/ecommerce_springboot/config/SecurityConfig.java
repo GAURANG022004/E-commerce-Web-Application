@@ -23,8 +23,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-   
-	@Bean
+    @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
@@ -33,20 +32,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationSuccessHandler customerAuthenticationSuccessHandler(){
-        
+    public AuthenticationSuccessHandler customerAuthenticationSuccessHandler() {
+
         return (request, response, authentication) -> {
 
-            if(authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))){
-                        response.sendRedirect("/admin/dashboard");
-            } else if(authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_RETAILER"))){
-                        response.sendRedirect("/retailer/dashboard");
-                    }
-            else if(authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"))){
-                        response.sendRedirect("/customer/dashboard");
+            if (authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+                response.sendRedirect("/admin/dashboard");
+            } else if (authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_RETAILER"))) {
+                response.sendRedirect("/retailer/dashboard");
+            } else if (authentication.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_CUSTOMER"))) {
+                response.sendRedirect("/customer/dashboard");
             } else {
                 response.sendRedirect("/login");
             }
@@ -54,45 +52,56 @@ public class SecurityConfig {
         };
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
         http
-            .authorizeHttpRequests(auth -> auth
-                // Public access
-                .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/images/**").permitAll()
-                // Admin only
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                // Retailer and Admin only
-                .requestMatchers("/retailer/**").hasAnyRole("RETAILER", "ADMIN")
-                .requestMatchers("/products/new", "/products/save", "/products/edit/**", "/products/delete/**").hasAnyRole("RETAILER", "ADMIN")
-                // Customer can view products
-                .requestMatchers("/products", "/products/search", "/products/filter").hasAnyRole("CUSTOMER", "RETAILER", "ADMIN")
-                // Customer cart operations
-                .requestMatchers("/cart", "/cart/**", "/add/**").hasAnyRole("CUSTOMER", "ADMIN")
-                // Customer checkout and payment
-                .requestMatchers("/checkout", "/checkout/**", "/payment", "/payment/**", "/orders", "/orders/**").hasAnyRole("CUSTOMER", "ADMIN")
-                // Any other request requires authentication
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-            .loginPage("/login")
-            .loginProcessingUrl("/login")
-            .usernameParameter("email")
-            .passwordParameter("userpassword")
-            .successHandler(customerAuthenticationSuccessHandler())
-            .failureUrl("/login?error=true")
-            .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutSuccessUrl("/login")
-                .permitAll()
-            )
-            .exceptionHandling(exception -> exception
-                .accessDeniedPage("/access-denied")
-            )
-            .csrf(csrf -> csrf.disable());
-        
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/login", "/register",
+                                "/css/**", "/js/**", "/images/**")
+                        .permitAll()
+
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+
+                        .requestMatchers("/retailer/**").hasAnyRole("RETAILER", "ADMIN")
+
+                        .requestMatchers("/products/new", "/products/save",
+                                "/products/edit/**", "/products/delete/**")
+                        .hasAnyRole("RETAILER", "ADMIN")
+
+                        .requestMatchers("/products", "/products/search",
+                                "/products/filter")
+                        .hasAnyRole("CUSTOMER", "RETAILER", "ADMIN")
+
+                        .requestMatchers("/cart", "/cart/**", "/add/**")
+                        .hasAnyRole("CUSTOMER", "ADMIN")
+
+                        .requestMatchers("/checkout", "/checkout/**",
+                                "/payment", "/payment/**",
+                                "/orders", "/orders/**")
+                        .hasAnyRole("CUSTOMER", "ADMIN")
+
+                        .anyRequest().authenticated())
+
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .successHandler(customerAuthenticationSuccessHandler())
+                        .failureHandler((request, response, exception) -> {
+                            System.out.println("LOGIN FAILED: " + exception.getClass().getName());
+                            System.out.println("LOGIN FAILED MESSAGE: " + exception.getMessage());
+                            response.sendRedirect("/login?error=true");
+                        })
+                        .permitAll())
+
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login")
+                        .permitAll())
+
+                .exceptionHandling(exception -> exception.accessDeniedPage("/access-denied"))
+
+                .csrf(csrf -> csrf.disable());
+
         return http.build();
     }
 }
