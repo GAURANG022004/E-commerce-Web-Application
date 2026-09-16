@@ -23,106 +23,102 @@ import java.util.Collections;
 @Controller
 public class UserController {
 
+    @Autowired
+    private UserService service;
 
-@Autowired
-private UserService service;
+    @Autowired
+    private UserRepository repo;
 
-@Autowired
-private UserRepository repo;
+    @GetMapping("/")
+    public String start() {
+        return "login";
+    }
 
-@GetMapping("/")
-public String start() {
-    return "login";
-}
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
+    }
 
-@GetMapping("/login")
-public String showLoginPage() {
-    return "login";
-}
+    // @PostMapping("/login")
+    // public String loginUser(
+    // @RequestParam String email,
+    // @RequestParam String userpassword,
+    // Model model,
+    // HttpSession session) {
 
-// @PostMapping("/login")
-// public String loginUser(
-//         @RequestParam String email,
-//         @RequestParam String userpassword,
-//         Model model,
-//         HttpSession session) {
+    // User user = service.chekUser(email, userpassword);
 
-//     User user = service.chekUser(email, userpassword);
+    // if (user == null) {
+    // model.addAttribute("error", "Wrong email or password.");
+    // return "login";
+    // }
 
-//     if (user == null) {
-//         model.addAttribute("error", "Wrong email or password.");
-//         return "login";
-//     }
+    // // Create authenticated user for Spring Security
+    // Authentication authentication =
+    // new UsernamePasswordAuthenticationToken(
+    // user.getEmail(),
+    // null,
+    // Collections.singletonList(
+    // new SimpleGrantedAuthority(
+    // "ROLE_" + user.getRole()
+    // )
+    // )
+    // );
 
-//     // Create authenticated user for Spring Security
-//     Authentication authentication =
-//             new UsernamePasswordAuthenticationToken(
-//                     user.getEmail(),
-//                     null,
-//                     Collections.singletonList(
-//                             new SimpleGrantedAuthority(
-//                                     "ROLE_" + user.getRole()
-//                             )
-//                     )
-//             );
+    // SecurityContextHolder.getContext()
+    // .setAuthentication(authentication);
 
-//     SecurityContextHolder.getContext()
-//             .setAuthentication(authentication);
+    // // Store application user in session
+    // session.setAttribute("user", user);
 
-//     // Store application user in session
-//     session.setAttribute("user", user);
+    // // Redirect according to role
+    // if ("ADMIN".equals(user.getRole())) {
+    // return "redirect:/admin/dashboard";
+    // }
 
-//     // Redirect according to role
-//     if ("ADMIN".equals(user.getRole())) {
-//         return "redirect:/admin/dashboard";
-//     }
+    // if ("RETAILER".equals(user.getRole())) {
+    // return "redirect:/retailer/dashboard";
+    // }
 
-//     if ("RETAILER".equals(user.getRole())) {
-//         return "redirect:/retailer/dashboard";
-//     }
+    // if ("CUSTOMER".equals(user.getRole())) {
+    // return "redirect:/customer/dashboard";
+    // }
 
-//     if ("CUSTOMER".equals(user.getRole())) {
-//         return "redirect:/customer/dashboard";
-//     }
+    // // Unknown role
+    // SecurityContextHolder.clearContext();
+    // session.invalidate();
 
-//     // Unknown role
-//     SecurityContextHolder.clearContext();
-//     session.invalidate();
+    // model.addAttribute("error", "Invalid user role.");
+    // return "login";
+    // }
 
-//     model.addAttribute("error", "Invalid user role.");
-//     return "login";
-// }
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
 
+        model.addAttribute("user", new User());
 
+        return "register";
 
-@GetMapping("/register")
-public String showRegistrationForm(Model model) {
+    }
 
-    model.addAttribute("user", new User());
+    @PostMapping("/register")
+    public String processRegistration(
+            @ModelAttribute("user") User user) {
 
-    return "register";
+        service.registerUserWithRole(user, user.getRole());
 
-}
+        System.out.println(
+                "User Registered: "
+                        + user.getEmail()
+                        + " with role: "
+                        + user.getRole());
 
-@PostMapping("/register")
-public String processRegistration(
-        @ModelAttribute("user") User user) {
+        return "redirect:/login";
+    }
 
-    service.registerUserWithRole(user, user.getRole());
-
-    System.out.println(
-            "User Registered: "
-            + user.getEmail()
-            + " with role: "
-            + user.getRole()
-    );
-
-    return "redirect:/login";
-}
-
-@GetMapping("/access-denied")
-public String accessDenied() {
-    return "access-denied";
-}
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "access-denied";
+    }
 
 }
