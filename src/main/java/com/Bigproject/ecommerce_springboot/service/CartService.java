@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
+import com.Bigproject.ecommerce_springboot.Exception.InsufficientStockException;
 import com.Bigproject.ecommerce_springboot.Repository.ProductRepository;
 import com.Bigproject.ecommerce_springboot.entity.Cart;
 import com.Bigproject.ecommerce_springboot.entity.Product;
@@ -22,34 +23,57 @@ public class CartService {
 
 	public void addItem(Product product, int quantity) {
 
+		if (quantity <= 0) {
+			throw new IllegalArgumentException(
+					"Quantity must be greater than 0");
+		}
+
 		for (Cart item : cartItems) {
 
 			if (item.getProduct().getId().equals(product.getId())) {
-				item.setQuantity(item.getQuantity() + quantity);
+
+				int newQuantity = item.getQuantity() + quantity;
+
+				if (newQuantity > product.getStock()) {
+					throw new InsufficientStockException(
+							"Not enough stock available for " + product.getName());
+				}
+
+				item.setQuantity(newQuantity);
 				return;
 			}
-
 		}
-		cartItems.add(new Cart(product, quantity));
 
+		if (quantity > product.getStock()) {
+			throw new InsufficientStockException(
+					"Not enough stock available for " + product.getName());
+		}
+
+		cartItems.add(new Cart(product, quantity));
 	}
 
 	public void removeQuantity(Product product, int quantity) {
 
+		if (quantity <= 0) {
+			throw new IllegalArgumentException(
+					"Quantity must be greater than 0");
+		}
+
 		for (Cart item : cartItems) {
 
 			if (item.getProduct().getId().equals(product.getId())) {
-				if (item.getQuantity() - quantity >= 0) {
-					item.setQuantity(item.getQuantity() - quantity);
-				}else {
-					item.setQuantity(0);
+
+				int newQuantity = item.getQuantity() - quantity;
+
+				if (newQuantity <= 0) {
+					cartItems.remove(item);
+				} else {
+					item.setQuantity(newQuantity);
 				}
 
 				return;
 			}
-
 		}
-
 	}
 
 	public List<Cart> getCartItems() {
@@ -70,16 +94,34 @@ public class CartService {
 		cartItems.removeIf(item -> item.getProduct().getId().equals(id));
 
 	}
-	
-	public void updateQuantity(Product product, int quantity) {
+
+	public String updateQuantity(Product product, int quantity) {
+
+		if (quantity <= 0) {
+			throw new IllegalArgumentException("Quantity must be greater than 0");
+		}
+
 		for (Cart item : cartItems) {
+
 			if (item.getProduct().getId().equals(product.getId())) {
+
+				if (quantity > product.getStock()) {
+
+					item.setQuantity(product.getStock());
+
+					return "Only " + product.getStock()
+							+ " items are currently available. "
+							+ "Quantity has been adjusted to available stock.";
+				}
+
 				item.setQuantity(quantity);
-				return;
+				return null;
 			}
 		}
+
+		return null;
 	}
-	
+
 	public void clearCart() {
 		cartItems.clear();
 	}
