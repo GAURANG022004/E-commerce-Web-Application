@@ -78,13 +78,13 @@ public class ProductService {
 
 	//ONLY RETAILER CAN VIEW THEIR OWN PRODUCTS
     public List<Product> findProductsByRetailer(Long retailerId) {
-        return repo.findByRetailerUser_id(retailerId);
+        return repo.findProductsByRetailerId(retailerId);
     }
 
 	//ONLY RETAILER CAN VIEW THEIR OWN PRODUCTS
     public Product findRetailerProduct(Long productId, Long retailerId) {
 
-        return repo.findByIdAndRetailerUser_id(
+        return repo.findProductByIdAndRetailerId(
                 productId,
                 retailerId
         );
@@ -104,7 +104,7 @@ public class ProductService {
             Long retailerId) {
 
         Product product =
-                repo.findByIdAndRetailerUser_id(
+                repo.findProductByIdAndRetailerId(
                         productId,
                         retailerId
                 );
