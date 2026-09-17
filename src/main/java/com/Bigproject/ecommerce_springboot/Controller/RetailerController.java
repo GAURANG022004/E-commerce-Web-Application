@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Bigproject.ecommerce_springboot.entity.Product;
 import com.Bigproject.ecommerce_springboot.entity.User;
@@ -39,12 +40,13 @@ public class RetailerController {
             return "redirect:/login";
         }
 
-        model.addAttribute(
-                "products",
-                productService.findProductsByRetailer(
-                        retailer.getUser_id()
-                )
-        );
+        var products = productService.findProductsByRetailer(retailer.getUser_id());
+        model.addAttribute("products", products);
+        model.addAttribute("totalProducts", products.size());
+        model.addAttribute("totalStock", products.stream().mapToInt(Product::getStock).sum());
+        model.addAttribute("lowStockProducts", products.stream()
+                .filter(product -> product.getStock() <= 10)
+                .count());
 
         return "retailer-dashboard";
     }
@@ -94,6 +96,8 @@ public class RetailerController {
         }
 
         model.addAttribute("product", new Product());
+        model.addAttribute("formAction", "/retailer/products/save");
+        model.addAttribute("cancelUrl", "/retailer/products");
 
         return "product-form";
     }
@@ -106,7 +110,8 @@ public class RetailerController {
     @PostMapping("/products/save")
     public String saveProduct(
             @ModelAttribute Product product,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
         User retailer =
                 (User) session.getAttribute("user");
@@ -116,12 +121,24 @@ public class RetailerController {
         }
 
         // Attach logged-in retailer to product
-        productService.saveProductForRetailer(
-                product,
-                retailer
-        );
+                boolean newProduct = product.getId() == null;
+        try {
+            boolean saved = productService.saveProductForRetailer(product, retailer);
 
-        return "redirect:/retailer/products";
+            if (!saved) {
+                redirectAttributes.addFlashAttribute("productError",
+                        "You can only edit products owned by your retailer account.");
+                return "redirect:/retailer/dashboard";
+            }
+
+            redirectAttributes.addFlashAttribute("productSuccess",
+                    newProduct ? "Product added successfully." : "Product updated successfully.");
+            return "redirect:/retailer/dashboard";
+        } catch (Exception exception) {
+            redirectAttributes.addFlashAttribute("productError",
+                    "Product could not be saved. Please check the details and try again.");
+            return "redirect:/retailer/dashboard";
+        }
     }
 
 
@@ -154,6 +171,8 @@ public class RetailerController {
         }
 
         model.addAttribute("product", product);
+        model.addAttribute("formAction", "/retailer/products/save");
+        model.addAttribute("cancelUrl", "/retailer/products");
 
         return "product-form";
     }
