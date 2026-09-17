@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Bigproject.ecommerce_springboot.Repository.PaymentRepository;
 import com.Bigproject.ecommerce_springboot.entity.Order;
@@ -35,7 +36,7 @@ public class CheckoutController {
 
     // Create our order + Razorpay order
     @PostMapping("/checkout")
-    public String checkout(HttpSession session) {
+    public String checkout(HttpSession session, RedirectAttributes redirectAttributes) {
 
         User user = (User) session.getAttribute("user");
 
@@ -66,7 +67,8 @@ public class CheckoutController {
         } catch (Exception e) {
 
             e.printStackTrace();
-
+            redirectAttributes.addFlashAttribute("checkoutError",
+                    "Payment gateway could not be initialized. Add valid Razorpay test keys and try again.");
             return "redirect:/cart";
         }
     }
@@ -97,6 +99,7 @@ public class CheckoutController {
 
         model.addAttribute("order", order);
         model.addAttribute("razorpayKeyId", razorpayService.getKeyId());
+        model.addAttribute("gatewayConfigured", razorpayService.isConfigured());
 
         return "checkout";
     }
