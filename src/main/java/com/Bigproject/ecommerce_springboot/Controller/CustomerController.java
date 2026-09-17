@@ -62,7 +62,7 @@ public class CustomerController {
         int safePage = Math.max(page, 0);
         int safeSize = Math.min(Math.max(size, 6), 48);
         Pageable pageable = PageRequest.of(safePage, safeSize);
-        Page<Product> products = productService.searchProducts(keyword, category, minPrice, maxPrice, pageable);
+        Page<Product> products = productService.searchProducts(null, keyword, category, minPrice, maxPrice, pageable);
 
         model.addAttribute("products", products.getContent());
         model.addAttribute("currentPage", products.getNumber());
