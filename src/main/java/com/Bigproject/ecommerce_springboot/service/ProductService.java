@@ -47,9 +47,9 @@ public class ProductService {
         return repo.findAll(pageable);
     }
 
-    public Page<Product> searchProducts(String keyword, String category,
+    public Page<Product> searchProducts(Long retailerId, String keyword, String category,
             Double minPrice, Double maxPrice, Pageable pageable) {
-        return repo.searchProducts(keyword, category, minPrice, maxPrice, pageable);
+        return repo.searchProducts(retailerId, keyword, category, minPrice, maxPrice, pageable);
     }
 
 
@@ -96,11 +96,16 @@ public class ProductService {
     }
 
 	//ONLY RETAILER CAN ADD PRODUCTS
-    public void saveProductForRetailer(Product product, User retailer) {
+    public boolean saveProductForRetailer(Product product, User retailer) {
+        if (product.getId() != null
+                && repo.findProductByIdAndRetailerId(product.getId(), retailer.getUser_id()) == null) {
+            return false;
+        }
 
         product.setRetailer(retailer);
 
         repo.save(product);
+        return true;
     }
 
 	//ONLY RETAILER CAN DELETE THEIR OWN PRODUCTS
