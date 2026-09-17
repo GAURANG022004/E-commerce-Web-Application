@@ -1,7 +1,5 @@
 package com.Bigproject.ecommerce_springboot.Controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,55 +32,47 @@ public class CustomerController {
     
     @GetMapping("/dashboard")
     public String customerDashboard(Model model) {
-        model.addAttribute("products", productRepository.findAll());
-        model.addAttribute("cartCount", cartService.getCartItems().size());
-        return "customer-dashboard";
+        return customerProducts(0, 12, null, null, null, null, model);
     }
     
     @GetMapping("/products")
     public String customerProducts(@RequestParam(defaultValue = "0") int page, 
                                    @RequestParam(defaultValue = "12") int size,
                                    @RequestParam(required = false) String category,
+                                   @RequestParam(required = false) String keyword,
+                                   @RequestParam(required = false) Double minPrice,
+                                   @RequestParam(required = false) Double maxPrice,
                                    Model model) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Product> products;
-        
-        if (category != null && !category.isEmpty()) {
-            List<Product> categoryProducts = productService.findByCatgory(category);
-            model.addAttribute("products", categoryProducts);
-            model.addAttribute("currentPage", 0);
-            model.addAttribute("totalPages", 1);
-        } else {
-            products = productService.findAll(pageable);
-            model.addAttribute("products", products.getContent());
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", products.getTotalPages());
-        }
-        
-        model.addAttribute("size", size);
-        model.addAttribute("cartCount", cartService.getCartItems().size());
-        model.addAttribute("selectedCategory", category);
-        return "customer-dashboard";
+        return renderProductResults(page, size, keyword, category, minPrice, maxPrice, model);
     }
     
     @GetMapping("/search")
     public String searchProducts(@RequestParam(required = false) String keyword,
                                 @RequestParam(required = false) String category,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "12") int size,
+                                @RequestParam(required = false) Double minPrice,
+                                @RequestParam(required = false) Double maxPrice,
                                 Model model) {
-        List<Product> result;
+        return renderProductResults(page, size, keyword, category, minPrice, maxPrice, model);
+    }
 
-        if (keyword != null && !keyword.isEmpty() && category != null && !category.isEmpty()) {
-            result = productService.searchByKeywordAndCategory(keyword, category);
-        } else if (keyword != null && !keyword.isEmpty()) {
-            result = productService.searchByOptionalParams(keyword);
-        } else if (category != null && !category.isEmpty()) {
-            result = productService.findByCatgory(category);
-        } else {
-            result = productService.findAll();
-        }
+    private String renderProductResults(int page, int size, String keyword, String category,
+            Double minPrice, Double maxPrice, Model model) {
+        int safePage = Math.max(page, 0);
+        int safeSize = Math.min(Math.max(size, 6), 48);
+        Pageable pageable = PageRequest.of(safePage, safeSize);
+        Page<Product> products = productService.searchProducts(keyword, category, minPrice, maxPrice, pageable);
 
-        model.addAttribute("products", result);
+        model.addAttribute("products", products.getContent());
+        model.addAttribute("currentPage", products.getNumber());
+        model.addAttribute("totalPages", products.getTotalPages());
+        model.addAttribute("size", safeSize);
         model.addAttribute("cartCount", cartService.getCartItems().size());
+        model.addAttribute("selectedCategory", category);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
         return "customer-dashboard";
     }
     
