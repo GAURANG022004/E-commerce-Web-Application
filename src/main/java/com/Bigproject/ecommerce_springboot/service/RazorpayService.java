@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import com.razorpay.RazorpayClient;
 import com.razorpay.Utils;
 
+import jakarta.annotation.PostConstruct;
+
 @Service
 public class RazorpayService {
 
@@ -18,6 +20,10 @@ public class RazorpayService {
 
     public String createRazorpayOrder(double amount, String receipt) throws Exception {
 
+        if (!isConfigured()) {
+            throw new IllegalStateException("Razorpay credentials are not configured");
+        }
+
         RazorpayClient client = new RazorpayClient(keyId, keySecret);
 
         int amountInPaise = (int) Math.round(amount * 100);
@@ -28,8 +34,7 @@ public class RazorpayService {
         orderRequest.put("currency", "INR");
         orderRequest.put("receipt", receipt);
 
-        com.razorpay.Order razorpayOrder =
-                client.orders.create(orderRequest);
+        com.razorpay.Order razorpayOrder = client.orders.create(orderRequest);
 
         return razorpayOrder.get("id");
     }
@@ -59,5 +64,29 @@ public class RazorpayService {
 
     public String getKeyId() {
         return keyId;
+    }
+
+    public boolean isConfigured() {
+        return keyId != null && keySecret != null
+                && !keyId.isBlank() && !keySecret.isBlank()
+                && !keyId.contains("RAZORPAY_TEST_KEY")
+                && !keySecret.contains("RAZORPAY_TEST_SECRET");
+    }
+
+    @PostConstruct
+    public void checkRazorpayConfig() {
+        System.out.println("Key ID = [" + keyId + "]");
+        System.out.println("Key ID length = " +
+                (keyId == null ? "NULL" : keyId.length()));
+
+        System.out.println("Secret exists = " +
+                (keySecret != null && !keySecret.isBlank()));
+
+        System.out.println("Secret length = " +
+                (keySecret == null ? "NULL" : keySecret.length()));
+
+        System.out.println("Secret starts/ends with whitespace = " +
+                (keySecret != null &&
+                        !keySecret.equals(keySecret.trim())));
     }
 }
