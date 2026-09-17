@@ -6,7 +6,7 @@
     <title>Retailer Dashboard | Manage Your Store</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -197,6 +197,56 @@
             color: rgba(255, 255, 255, 0.8);
             font-size: 12px;
         }
+
+        /* ShopHub storefront theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            padding: 28px 20px;
+        }
+        .dashboard-container { max-width: 1120px; }
+        .dashboard-card {
+            background: #fff;
+            border: 1px solid #e1e1e1;
+            border-radius: 12px;
+            box-shadow: 0 14px 36px rgba(35, 47, 62, 0.10);
+            backdrop-filter: none;
+        }
+        .dashboard-header {
+            background: linear-gradient(135deg, #232f3e 0%, #37475a 100%);
+            padding: 30px 40px;
+        }
+        .dashboard-icon {
+            width: 72px;
+            height: 72px;
+            background: #ff9900;
+            border-radius: 12px;
+            box-shadow: 0 10px 24px rgba(255, 153, 0, 0.28);
+        }
+        .dashboard-icon i { color: #232f3e; }
+        .dashboard-title { font-size: 28px; }
+        .dashboard-body { padding: 32px 40px 40px; }
+        .welcome-text h4 { color: #232f3e; }
+        .welcome-text p { color: #667085; }
+        .stat-card, .action-card {
+            background: #fff;
+            border: 1px solid #e1e1e1;
+            border-radius: 10px;
+            box-shadow: 0 5px 16px rgba(35, 47, 62, 0.06);
+        }
+        .stat-card:hover, .action-card:hover { background: #fffaf2; transform: translateY(-4px); }
+        .stat-icon { color: #ff9900; }
+        .stat-value, .action-title { color: #232f3e; }
+        .stat-label, .action-desc { color: #667085; }
+        .action-icon, .action-card.products .action-icon, .action-card.add .action-icon,
+        .action-card.orders .action-icon, .action-card.logout .action-icon {
+            background: #ff9900;
+            border-radius: 10px;
+            color: #232f3e;
+        }
+        .user-trigger { background: rgba(255,255,255,0.12); border-radius: 8px; }
+        .user-avatar { background: #ff9900; color: #232f3e; }
         .dropdown-menu-custom {
             position: absolute;
             right: 0;
@@ -239,6 +289,26 @@
             margin-bottom: 30px;
             padding: 0 20px;
         }
+
+        /* Final contrast pass for dashboard content and links. */
+        .dashboard-card,
+        .dashboard-card p,
+        .dashboard-card span,
+        .dashboard-card .stat-label,
+        .dashboard-card .action-desc {
+            color: #232f3e;
+        }
+        .dashboard-header .dashboard-title,
+        .dashboard-header .dashboard-subtitle { color: #fff; }
+        .dashboard-header .dashboard-subtitle { color: rgba(255, 255, 255, 0.82); }
+        .dashboard-card .welcome-text h4 { color: #232f3e; }
+        .dashboard-card .welcome-text p { color: #667085; }
+        .dashboard-card .stat-value,
+        .dashboard-card .action-title { color: #232f3e; }
+        .dashboard-card .action-card { color: #232f3e; }
+        .dashboard-card .action-card:hover { color: #232f3e; }
+        .dashboard-card .dropdown-item-custom { color: #475467; }
+        .dashboard-card .dropdown-item-custom:hover { color: #b42318; }
     </style>
 </head>
 <body>
@@ -252,6 +322,14 @@
                 <p class="dashboard-subtitle">Manage your store and track your sales</p>
             </div>
             <div class="dashboard-body">
+                <div th:if="${productSuccess}" class="alert alert-success" role="alert">
+                    <i class="fas fa-circle-check me-2"></i>
+                    <span th:text="${productSuccess}">Product saved successfully.</span>
+                </div>
+                <div th:if="${productError}" class="alert alert-danger" role="alert">
+                    <i class="fas fa-circle-exclamation me-2"></i>
+                    <span th:text="${productError}">Product could not be saved.</span>
+                </div>
                 <div class="header-row">
                     <div class="welcome-text" style="text-align: left; margin-bottom: 0;">
                         <h4>Welcome back, <span th:text="${session.user?.username ?: 'Retailer'}">Retailer</span>! 👋</h4>
@@ -274,18 +352,18 @@
                 <div class="stats-row">
                     <div class="stat-card">
                         <div class="stat-icon"><i class="fas fa-box"></i></div>
-                        <div class="stat-value">0</div>
+                        <div class="stat-value" th:text="${totalProducts ?: 0}">0</div>
                         <div class="stat-label">Total Products</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-label">Total Orders</div>
+                        <div class="stat-icon"><i class="fas fa-boxes-stacked"></i></div>
+                        <div class="stat-value" th:text="${totalStock ?: 0}">0</div>
+                        <div class="stat-label">Total Stock Units</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
-                        <div class="stat-value">$0</div>
-                        <div class="stat-label">Revenue</div>
+                        <div class="stat-icon"><i class="fas fa-triangle-exclamation"></i></div>
+                        <div class="stat-value" th:text="${lowStockProducts ?: 0}">0</div>
+                        <div class="stat-label">Low Stock Products</div>
                     </div>
                 </div>
                 <div class="action-grid">
