@@ -12,11 +12,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import com.Bigproject.ecommerce_springboot.Repository.UserRepository;
+import com.Bigproject.ecommerce_springboot.entity.User;
+
 @Configuration
 public class SecurityConfig {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -35,6 +41,13 @@ public class SecurityConfig {
     public AuthenticationSuccessHandler customerAuthenticationSuccessHandler() {
 
         return (request, response, authentication) -> {
+
+            User user = userRepository.findByEmail(authentication.getName());
+            if (user == null) {
+                response.sendRedirect("/login?error=true");
+                return;
+            }
+            request.getSession(true).setAttribute("user", user);
 
             if (authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
