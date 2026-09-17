@@ -47,6 +47,11 @@ public class ProductService {
         return repo.findAll(pageable);
     }
 
+    public Page<Product> searchProducts(String keyword, String category,
+            Double minPrice, Double maxPrice, Pageable pageable) {
+        return repo.searchProducts(keyword, category, minPrice, maxPrice, pageable);
+    }
+
 
     public List<Product> searchByOptionalParams(String keyword) {
         return repo.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
