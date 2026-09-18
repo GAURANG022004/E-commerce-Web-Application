@@ -362,13 +362,19 @@
 
             <button type="button"
                     id="payButton"
-                    class="btn btn-primary pay-button w-100">
+                    class="btn btn-primary pay-button w-100"
+                    th:disabled="${!gatewayConfigured}">
 
                 <i class="bi bi-credit-card me-2"></i>
 
                 Pay with Razorpay
 
             </button>
+
+            <div th:if="${!gatewayConfigured}" class="alert alert-warning mt-3 mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Payment is temporarily unavailable because the Razorpay test keys are not configured.
+            </div>
 
 
             <div class="text-center secure-payment mt-3">
@@ -530,6 +536,10 @@
 
             const razorpay =
                 new Razorpay(options);
+
+            razorpay.on("payment.failed", function () {
+                window.location.href = "/payment-failed";
+            });
 
             razorpay.open();
 
