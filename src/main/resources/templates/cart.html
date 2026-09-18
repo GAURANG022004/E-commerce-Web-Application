@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
@@ -14,7 +14,7 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet">
 
     <style>
@@ -214,6 +214,43 @@
             background: rgba(25, 135, 84, 0.5);
         }
 
+        /* ShopHub storefront theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            padding: 28px 20px;
+        }
+        .cart-header, .cart-card, .summary-card {
+            background: #fff;
+            border: 1px solid #e1e1e1;
+            border-radius: 12px;
+            box-shadow: 0 12px 30px rgba(35, 47, 62, 0.08);
+            backdrop-filter: none;
+        }
+        .cart-header { padding: 24px 28px; }
+        .cart-title { color: #232f3e; font-size: 28px; }
+        .cart-icon { background: #ff9900; box-shadow: 0 10px 24px rgba(255, 153, 0, 0.24); }
+        .cart-icon i { color: #232f3e; }
+        .cart-table { color: #333; }
+        .cart-table thead { background: #f3f4f6; color: #232f3e; }
+        .cart-table td { border-bottom: 1px solid #eee; }
+        .cart-table tbody tr:hover { background: #fffaf2; }
+        .cart-table img { box-shadow: none; border: 1px solid #e1e1e1; }
+        .price-tag { color: #232f3e; }
+        .quantity-badge { background: #f3f4f6; color: #232f3e; border-radius: 6px; }
+        .btn-glass, .btn-glass-danger, .btn-glass-warning, .btn-glass-success {
+            border-radius: 6px;
+            background: #fff;
+            border: 1px solid #d5d9d9;
+            color: #232f3e;
+        }
+        .btn-glass:hover { background: #f8f9fa; }
+        .btn-glass-warning { background: #ff9900; border-color: #ff9900; }
+        .btn-glass-warning:hover { background: #e88b00; }
+        .btn-glass-danger { color: #b42318; }
+        .btn-glass-success { color: #067647; }
+
         .quantity-form {
             display: flex;
             gap: 8px;
@@ -344,12 +381,55 @@
             opacity: 0.7;
             margin-bottom: 25px;
         }
+
+        /* Final contrast pass for cart rows, summary, and actions. */
+        .cart-container,
+        .cart-container p,
+        .cart-container span,
+        .cart-container th,
+        .cart-container td,
+        .cart-container .summary-title,
+        .cart-container .summary-line,
+        .cart-container .empty-cart {
+            color: #232f3e;
+        }
+        .cart-container .stock-info { color: #667085; }
+        .cart-container .cart-table th { color: #232f3e; }
+        .cart-container .cart-table td { color: #333; }
+        .cart-container .quantity-input {
+            background: #fff;
+            border: 1px solid #d5d9d9;
+            color: #232f3e;
+        }
+        .cart-container .quantity-input:focus { border-color: #ff9900; }
+        .cart-container .summary-line { border-bottom-color: #e1e1e1; }
+        .cart-container .summary-line.total { color: #232f3e; }
+        .cart-container .btn-checkout {
+            background: #ff9900;
+            color: #232f3e;
+            border-radius: 8px;
+            box-shadow: 0 8px 18px rgba(255, 153, 0, 0.24);
+        }
+        .cart-container .btn-checkout:hover { background: #e88b00; }
+        .cart-container .btn-continue {
+            background: #fff;
+            border: 1px solid #d5d9d9;
+            color: #232f3e;
+            border-radius: 8px;
+        }
+        .cart-container .btn-continue:hover { background: #f8f9fa; }
+        .cart-container .empty-cart .btn-light { color: #232f3e; border: 1px solid #d5d9d9; }
     </style>
 </head>
 
 <body>
 
 <div class="cart-container">
+
+    <div th:if="${checkoutError}" class="alert alert-danger" role="alert">
+        <i class="fas fa-circle-exclamation me-2"></i>
+        <span th:text="${checkoutError}">Payment gateway could not be initialized.</span>
+    </div>
 
     <!-- Cart Header -->
     <div class="cart-header">
@@ -621,4 +701,4 @@
 </body>
 
 </html>
-```
+
