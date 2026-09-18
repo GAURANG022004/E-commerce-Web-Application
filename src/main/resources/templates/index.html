@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -372,6 +372,82 @@
             padding: 2rem;
         }
 
+        /* ShopHub catalog theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+        .page-header {
+            background: linear-gradient(135deg, #232f3e 0%, #37475a 100%);
+            border-bottom: 0;
+            padding: 24px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-title {
+            color: #fff;
+            font-size: 30px;
+            text-shadow: none;
+            background: none;
+            -webkit-text-fill-color: initial;
+        }
+        .header-subtitle { color: rgba(255,255,255,0.82); }
+        .btn-glass, .btn-glass-light {
+            background: #ff9900;
+            border: 1px solid #ff9900;
+            border-radius: 8px;
+            color: #232f3e;
+            padding: 10px 16px;
+            backdrop-filter: none;
+        }
+        .btn-glass:hover, .btn-glass-light:hover { background: #e88b00; color: #232f3e; }
+        .search-filter-container {
+            background: #fff;
+            border: 1px solid #e1e1e1;
+            border-radius: 12px;
+            box-shadow: 0 5px 16px rgba(35,47,62,0.06);
+            padding: 20px;
+        }
+        .search-input, .category-select, .items-per-page {
+            background: #f8f9fa;
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            color: #232f3e;
+        }
+        .search-input::placeholder { color: #667085; }
+        .search-input:focus { background: #fff; border-color: #ff9900; color: #232f3e; box-shadow: 0 0 0 3px rgba(255,153,0,0.16); }
+        .search-icon { color: #667085; }
+        .category-select option { background: #fff; color: #232f3e; }
+        .product-card {
+            background: #fff;
+            border: 1px solid #e1e1e1;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(35,47,62,0.04);
+            backdrop-filter: none;
+        }
+        .product-card:hover { transform: translateY(-6px); box-shadow: 0 15px 35px rgba(35,47,62,0.12); }
+        .card-body { color: #333; }
+        .product-title { color: #232f3e; }
+        .product-description { color: #667085; }
+        .product-price { color: #232f3e; background: none; -webkit-text-fill-color: initial; }
+        .category-badge { background: #f3f4f6; color: #475467; border-radius: 6px; }
+        .action-btn { background: #fff; border: 1px solid #d5d9d9; color: #232f3e; border-radius: 6px; }
+        .action-btn:hover { background: #fffaf2; color: #232f3e; }
+        .action-btn.edit { background: #eaf2ff; color: #146eb4; }
+        .action-btn.delete { background: #fef3f2; color: #b42318; }
+        .add-to-cart-btn { background: #ff9900; color: #232f3e; border-radius: 6px; }
+        .add-to-cart-btn:hover { background: #e88b00; }
+        .quantity-input { background: #fff; border: 1px solid #d5d9d9; color: #232f3e; border-radius: 6px; }
+        .empty-state { background: #fff; border: 1px solid #e1e1e1; border-radius: 12px; color: #232f3e; backdrop-filter: none; }
+        .empty-state i { color: #98a2b3; }
+        .empty-state h3 { color: #232f3e; }
+        .empty-state p { color: #667085; }
+        .pagination-container { margin-top: 24px; padding: 12px; }
+        .page-link { background: #fff; border: 1px solid #d5d9d9; color: #232f3e; border-radius: 6px; }
+        .page-link:hover, .page-link.active { background: #ff9900; border-color: #ff9900; color: #232f3e; }
+        .catalog-back-link { color: #fff; text-decoration: none; font-size: 13px; }
+        .catalog-back-link:hover { color: #ff9900; }
+
         .page-link {
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -429,14 +505,18 @@
         <div class="container">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
+                    <a th:href="${catalogBackUrl}" class="catalog-back-link">
+                        <i class="fas fa-arrow-left me-1"></i>
+                        Back to <span th:text="${catalogBackLabel}">Dashboard</span>
+                    </a>
                     <h1 class="header-title"><i class="fas fa-store me-3"></i>Product Catalog</h1>
                     <p class="header-subtitle">Discover amazing products at incredible prices</p>
                 </div>
                 <div class="d-flex gap-3">
-                    <a href="/products/new" class="btn btn-glass btn-glass-light">
+                    <a th:if="${isStaff}" href="/products/new" class="btn btn-glass btn-glass-light">
                         <i class="fas fa-plus-circle me-2"></i>Add Product
                     </a>
-                    <a href="/cart" class="btn btn-glass">
+                    <a th:if="${!isStaff}" href="/cart" class="btn btn-glass">
                         <i class="fas fa-shopping-cart me-2"></i>View Cart
                     </a>
                 </div>
@@ -495,12 +575,14 @@
                         
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <span class="category-badge" th:text="${product.category}">Category</span>
+                            <span th:if="${isStaff}" class="category-badge"
+                                  th:text="${product.retailer != null ? 'Owner: ' + product.retailer.username : 'Owner: Platform'}">Owner</span>
                             <span class="stock-badge" 
                                   th:classappend="${product.stock > 50} ? 'stock-high' : (${product.stock > 20} ? 'stock-medium' : 'stock-low')"
                                   th:text="${product.stock > 50} ? 'In Stock' : (${product.stock > 20} ? 'Low Stock' : 'Critical')">Stock</span>
                         </div>
                         
-                        <div class="d-flex gap-2 mb-3">
+                        <div th:if="${isStaff}" class="d-flex gap-2 mb-3">
                             <a th:href="@{'/products/edit/' + ${product.id}}" class="action-btn edit flex-fill text-center">
                                 <i class="fas fa-edit me-1"></i>Edit
                             </a>
@@ -509,7 +591,7 @@
                             </a>
                         </div>
                         
-                        <form th:action="@{'/add/' + ${product.id}}" method="get">
+                        <form th:if="${!isStaff}" th:action="@{'/add/' + ${product.id}}" method="get">
                             <div class="d-flex gap-2">
                                 <input type="number" name="quantity" value="1" min="1" class="quantity-input">
                                 <button type="submit" class="add-to-cart-btn">
