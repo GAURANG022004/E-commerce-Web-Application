@@ -7,7 +7,7 @@
     <title>Welcome Back | Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <style>
         * {
@@ -260,6 +260,79 @@
             z-index: 10;
         }
 
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 0;
+            padding: 4px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .password-toggle:hover,
+        .password-toggle:focus {
+            color: white;
+        }
+
+        /* ShopHub storefront theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #232f3e 0%, #131921 58%, #0f3460 100%);
+            background-size: auto;
+        }
+        .particles { display: none; }
+        .login-card {
+            background: #ffffff;
+            border: 1px solid #e1e1e1;
+            border-radius: 12px;
+            box-shadow: 0 18px 45px rgba(19, 25, 33, 0.28);
+            padding: 40px;
+        }
+        .login-card:hover {
+            box-shadow: 0 22px 52px rgba(19, 25, 33, 0.34);
+        }
+        .logo-icon {
+            width: 72px;
+            height: 72px;
+            background: #ff9900;
+            border-radius: 12px;
+            box-shadow: 0 10px 24px rgba(255, 153, 0, 0.28);
+        }
+        .logo-icon i { color: #232f3e; }
+        .welcome-text h2 { color: #232f3e; text-shadow: none; }
+        .welcome-text p { color: #667085; }
+        .form-floating input {
+            background: #f8f9fa;
+            border: 1px solid #d5d9d9;
+            border-radius: 8px;
+            color: #232f3e;
+        }
+        .form-floating input::placeholder { color: #7b8490; }
+        .form-floating input:focus {
+            border-color: #ff9900;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.16);
+        }
+        .input-icon, .password-toggle { color: #667085; }
+        .password-toggle:hover, .password-toggle:focus { color: #232f3e; }
+        .remember-me, .forgot-password { color: #667085; }
+        .forgot-password { color: #146eb4; }
+        .login-btn {
+            background: #ff9900;
+            color: #232f3e;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .login-btn:hover { background: #e88b00; transform: translateY(-2px); }
+        .divider { color: #98a2b3; }
+        .divider::before, .divider::after { background: #e1e1e1; }
+        .signup-link { color: #667085; }
+        .signup-link a { color: #146eb4; }
+
         .options-row {
             display: flex;
             justify-content: space-between;
@@ -433,6 +506,42 @@
                 font-size: 24px;
             }
         }
+
+        /* Final contrast pass: keep all login content readable on the white card. */
+        .login-card,
+        .login-card p,
+        .login-card label,
+        .login-card span,
+        .login-card .divider,
+        .login-card .signup-link {
+            color: #232f3e;
+        }
+        .login-card .welcome-text p,
+        .login-card .remember-me,
+        .login-card .forgot-password,
+        .login-card .signup-link {
+            color: #667085;
+        }
+        .login-card .forgot-password,
+        .login-card .signup-link a {
+            color: #146eb4;
+        }
+        .login-card .remember-me input[type="checkbox"] {
+            accent-color: #ff9900;
+        }
+        .login-card .login-btn {
+            background: #ff9900;
+            color: #232f3e;
+            box-shadow: 0 8px 18px rgba(255, 153, 0, 0.24);
+        }
+        .login-card .login-btn:hover { background: #e88b00; }
+        .login-card .social-btn {
+            background: #f8f9fa;
+            border: 1px solid #d5d9d9;
+            color: #232f3e;
+        }
+        .login-card .social-btn:hover { background: #fffaf2; border-color: #ff9900; }
+        .login-card .alert { color: #b42318; background: #fef3f2; border-color: #fecdca; }
     </style>
 </head>
 
@@ -475,7 +584,11 @@
 
                 <div class="form-floating">
                     <i class="fas fa-lock input-icon"></i>
-                    <input type="password" name="password" placeholder="Enter your password" required>
+                    <input id="login-password" type="password" name="password" placeholder="Enter your password" required>
+                    <button type="button" class="password-toggle" id="password-toggle"
+                            aria-label="Show password" title="Show password">
+                        <i class="fas fa-eye"></i>
+                    </button>
                 </div>
                 
                 <div class="options-row">
@@ -508,6 +621,18 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const passwordInput = document.getElementById('login-password');
+        const passwordToggle = document.getElementById('password-toggle');
+
+        passwordToggle.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            passwordToggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+            passwordToggle.setAttribute('title', isPassword ? 'Hide password' : 'Show password');
+            passwordToggle.querySelector('i').className = isPassword ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+    </script>
 </body>
 
 </html>
