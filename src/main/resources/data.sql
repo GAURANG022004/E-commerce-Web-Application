@@ -25,3 +25,8 @@ VALUES ('IQ00 Neo 10r 5G', ' (Moonknight Titanium, 8GB RAM, 256GB Storage) | Sna
 
 INSERT INTO PRODUCT(name, description, price, category, stock, imageurl)
 VALUES ('ONIDA TV', 'ONIDA 126 cm (50 inches) Nexg Series 4K QLED Smart Google TV QZ50UI', 29499.00, 'Electronic', 100, 'https://m.media-amazon.com/images/I/71xCPdo8gHL._SX522_.jpg');
+
+
+
+INSERT INTO PRODUCT(name, description, price, category, stock, imageurl)
+VALUES ('ONIDA TV', 'ONIDA 126 cm (50 inches) Nexg Series 4K QLED Smart Google TV QZ50UI', 29499.00, 'Electronic', 100, 'https://m.media-amazon.com/images/I/71xCPdo8gHL._SX522_.jpg');
